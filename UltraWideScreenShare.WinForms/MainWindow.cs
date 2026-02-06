@@ -11,8 +11,8 @@ namespace UltraWideScreenShare.WinForms
         private Point _tittleBarLocation = new Point();
         private Magnifier _magnifier;
         private bool _isTransparent = false;
-        private Color _frameColor = Color.FromArgb(255, 53, 89, 224); //#3559E0
-        const int _borderWidth = 6;
+        private Color _frameColor = Color.FromArgb(255, 243, 107, 5);
+        const int _borderWidth = 1;
         private bool _showMagnifierScheduled = true;
         public MainWindow()
         {
