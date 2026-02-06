@@ -11,6 +11,9 @@ namespace UltraWideScreenShare.WinForms
         private Point _tittleBarLocation = new Point();
         private Magnifier _magnifier;
         private bool _isTransparent = false;
+        private bool _isCollapsed = false;
+        private bool _collapseDragOccurred = false;
+        private int _expandedTitleBarWidth;
         private Color _frameColor = Color.FromArgb(255, 243, 107, 5);
         const int _borderWidth = 1;
         private bool _showMagnifierScheduled = true;
@@ -18,6 +21,7 @@ namespace UltraWideScreenShare.WinForms
         {
             InitializeComponent();
             TitleBar.BringToFront();
+            _expandedTitleBarWidth = TitleBar.Width;
             InitializePaddingsForBorders();
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
         }
@@ -118,11 +122,14 @@ namespace UltraWideScreenShare.WinForms
 
         private void TitleBar_Paint(object sender, PaintEventArgs e)
         {
-            ControlPaint.DrawBorder(e.Graphics, TitleBar.ClientRectangle,
-               _frameColor, _borderWidth, ButtonBorderStyle.Solid,
-               _frameColor, 0, ButtonBorderStyle.Solid,
-               _frameColor, _borderWidth, ButtonBorderStyle.Solid,
-               _frameColor, _borderWidth, ButtonBorderStyle.Solid);
+            if (!_isCollapsed)
+            {
+                ControlPaint.DrawBorder(e.Graphics, TitleBar.ClientRectangle,
+                   _frameColor, _borderWidth, ButtonBorderStyle.Solid,
+                   _frameColor, 0, ButtonBorderStyle.Solid,
+                   _frameColor, _borderWidth, ButtonBorderStyle.Solid,
+                   _frameColor, _borderWidth, ButtonBorderStyle.Solid);
+            }
         }
 
         private void closeButton_Click(object sender, EventArgs e) => Close();
@@ -151,6 +158,74 @@ namespace UltraWideScreenShare.WinForms
             else
             {
                 maximizeButton.Image = Properties.Resources.maximize;
+            }
+        }
+
+        private void collapseButton_Click(object sender, EventArgs e)
+        {
+            if (_collapseDragOccurred)
+            {
+                _collapseDragOccurred = false;
+                return;
+            }
+
+            _isCollapsed = !_isCollapsed;
+
+            shareButton.Visible = !_isCollapsed;
+            titleButton.Visible = !_isCollapsed;
+            dragButton.Visible = !_isCollapsed;
+            minimizeButton.Visible = !_isCollapsed;
+            maximizeButton.Visible = !_isCollapsed;
+            closeButton.Visible = !_isCollapsed;
+
+            if (_isCollapsed)
+            {
+                _expandedTitleBarWidth = TitleBar.Width;
+                TitleBar.Width = collapseButton.Width + (_borderWidth * 2);
+                TitleBar.BackColor = Color.FromArgb(230, 230, 230);
+                collapseButton.BackColor = Color.FromArgb(230, 230, 230);
+                collapseButton.FlatAppearance.BorderColor = Color.FromArgb(230, 230, 230);
+                collapseButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(200, 200, 200);
+                collapseButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(180, 180, 180);
+                collapseButton.ForeColor = Color.FromArgb(180, 180, 180);
+                collapseButton.Text = "\u00BB"; // »
+                this.Opacity = 0.2;
+            }
+            else
+            {
+                this.Opacity = 1.0;
+                TitleBar.Width = _expandedTitleBarWidth;
+                TitleBar.BackColor = Color.White;
+                collapseButton.BackColor = Color.FromArgb(229, 229, 229);
+                collapseButton.FlatAppearance.BorderColor = Color.FromArgb(229, 229, 229);
+                collapseButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(229, 229, 229);
+                collapseButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(229, 229, 229);
+                collapseButton.ForeColor = SystemColors.ControlText;
+                collapseButton.Text = "\u00AB"; // «
+            }
+            TitleBar.Invalidate();
+        }
+
+        private void CollapseButton_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                _tittleBarLocation = e.Location;
+                _collapseDragOccurred = false;
+            }
+        }
+
+        private void CollapseButton_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                int delta = e.X - _tittleBarLocation.X;
+                if (Math.Abs(delta) > 3)
+                {
+                    _collapseDragOccurred = true;
+                    TitleBar.Left = Math.Clamp(value: e.X + TitleBar.Left - _tittleBarLocation.X,
+                        min: 0, max: Width - TitleBar.Width);
+                }
             }
         }
 

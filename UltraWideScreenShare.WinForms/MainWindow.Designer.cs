@@ -34,6 +34,7 @@ namespace UltraWideScreenShare.WinForms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             magnifierPanel = new Panel();
             TitleBar = new FlowLayoutPanel();
+            collapseButton = new Button();
             shareButton = new Button();
             titleButton = new Button();
             dragButton = new Button();
@@ -56,6 +57,7 @@ namespace UltraWideScreenShare.WinForms
             // TitleBar
             // 
             TitleBar.BackColor = Color.White;
+            TitleBar.Controls.Add(collapseButton);
             TitleBar.Controls.Add(shareButton);
             TitleBar.Controls.Add(titleButton);
             TitleBar.Controls.Add(dragButton);
@@ -65,10 +67,31 @@ namespace UltraWideScreenShare.WinForms
             TitleBar.Location = new Point(335, 0);
             TitleBar.Margin = new Padding(0);
             TitleBar.Name = "TitleBar";
-            TitleBar.Size = new Size(779, 64);
+            TitleBar.Size = new Size(827, 64);
             TitleBar.TabIndex = 1;
             TitleBar.WrapContents = false;
             TitleBar.Paint += TitleBar_Paint;
+            // 
+            // collapseButton
+            // 
+            collapseButton.BackColor = Color.FromArgb(229, 229, 229);
+            collapseButton.BackgroundImageLayout = ImageLayout.None;
+            collapseButton.FlatAppearance.BorderColor = Color.FromArgb(229, 229, 229);
+            collapseButton.FlatAppearance.BorderSize = 0;
+            collapseButton.FlatAppearance.MouseDownBackColor = Color.FromArgb(229, 229, 229);
+            collapseButton.FlatAppearance.MouseOverBackColor = Color.FromArgb(229, 229, 229);
+            collapseButton.FlatStyle = FlatStyle.Flat;
+            collapseButton.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point);
+            collapseButton.Location = new Point(0, 0);
+            collapseButton.Margin = new Padding(0);
+            collapseButton.Name = "collapseButton";
+            collapseButton.Size = new Size(48, 64);
+            collapseButton.TabIndex = 6;
+            collapseButton.Text = "\u00AB";
+            collapseButton.UseVisualStyleBackColor = false;
+            collapseButton.Click += collapseButton_Click;
+            collapseButton.MouseDown += CollapseButton_MouseDown;
+            collapseButton.MouseMove += CollapseButton_MouseMove;
             // 
             // shareButton
             // 
@@ -218,5 +241,6 @@ namespace UltraWideScreenShare.WinForms
         private Button titleButton;
         private Button dragButton;
         private Button shareButton;
+        private Button collapseButton;
     }
 }
